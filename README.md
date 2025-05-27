@@ -18,7 +18,7 @@ New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
 
 ## Granted
 
-Can only be used in Windows command prompt (not in powershell)
+If you wish to use multiple AWS account during local development *Granted* could be useful.
 
 -   Install Granted
     -   For Windows download https://docs.commonfate.io/granted/getting-started/#installing-the-cli -> Unzip and set PATH
@@ -40,9 +40,6 @@ Can only be used in Windows command prompt (not in powershell)
     -   docker exec into an ECS container: `aws ecs execute-command --cluster <clustername> --task <taskid> --container <container> --interactive --command "/bin/sh"`
     -   telnet from inside an ECS container: `apt update && apt install telnet`
 
-## AWS CDK
-
--   Install: `npm install -g aws-cdk`
 
 ## Using Kubernetes
 
@@ -50,6 +47,8 @@ Can only be used in Windows command prompt (not in powershell)
 -   Install kubectx, if you have multiple clusters: `choco install kubens kubectx`
 
 ## PNPM
+
+This project uses PNPM to manage dependencies.
 
 -   Install (via corepack):
     -   `corepack enable`
@@ -59,6 +58,8 @@ Can only be used in Windows command prompt (not in powershell)
     -   powershell: `Set-Alias -Name pn -Value pnpm` (put into $profile for permanent storage)
 
 ## NX
+
+NX is used to manage this monorepo.
 
 -   Run task: `pnpm nx run <project>:<task>` (e.g.: `pnpm nx run home:container`)
 -   Reset (when NX can't detect changes properly): `pnpm nx reset`
@@ -74,6 +75,6 @@ Can only be used in Windows command prompt (not in powershell)
     aws_secret_access_key=...
     aws_session_token=...
 
-# Config
+## Configure devops-cli
 
 The CLI can be configured via environment variables. If you want to run the tool locally, create a new `.env` file in the `apps/devops-cli` directory from the provided `.env.template` file.
