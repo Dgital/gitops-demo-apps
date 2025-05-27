@@ -1,0 +1,47 @@
+{
+  "name": "kitchen",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/kitchen/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "kitchen:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "kitchen:build:development"
+        },
+        "production": {
+          "buildTarget": "kitchen:build:production"
+        }
+      }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/kitchen",
+        "command": "node ./dist/main.js"
+      },
+      "dependsOn": ["build"]
+     },
+     "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "options": {
+        "engine": "docker",
+        "context": "apps/kitchen",
+        "file": "apps/kitchen/Dockerfile",
+        "push": true,
+        "metadata": {
+          "images": ["ghcr.io/dgital/gitops-demo-kitchen"],
+          "load": true,
+          "tags": ["latest", "type=sha,format=long"]
+        }
+      }
+    }
+  }
+}

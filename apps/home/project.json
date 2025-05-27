@@ -1,0 +1,47 @@
+{
+  "name": "home",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/home/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "home:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "home:build:development"
+        },
+        "production": {
+          "buildTarget": "home:build:production"
+        }
+      }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/home",
+        "command": "node ./dist/main.js"
+      },
+      "dependsOn": ["build"]
+    },
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "options": {
+        "engine": "docker",
+        "context": "apps/home",
+        "file": "apps/home/Dockerfile",
+        "push": true,
+        "metadata": {
+          "images": ["ghcr.io/dgital/gitops-demo-home"],
+          "load": true,
+          "tags": ["latest", "type=sha,format=long"]
+        }
+      }
+    }
+  }
+}

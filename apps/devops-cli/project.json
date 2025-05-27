@@ -1,0 +1,17 @@
+{
+  "name": "devops-cli",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/devops/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "run": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "cwd": "apps/devops-cli",
+        "commands": ["ts-node --project tsconfig.app.json src/main.ts"]
+      }
+    }
+  }
+}

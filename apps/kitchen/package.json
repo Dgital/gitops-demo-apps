@@ -1,0 +1,13 @@
+{
+  "name": "my-kitchen",
+  "version": "1.0.0",
+  "description": "My Kitchen",
+  "main": "main.js",
+  "author": "Me",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "tslib": "^2.6.2",
+    "axios": "^1.7.2"
+  }
+}

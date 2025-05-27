@@ -1,0 +1,122 @@
+name: Run devops-cli
+
+on:
+    workflow_call:
+        inputs:
+            args:
+                description: "Args passed to devops-cli"
+                required: true
+                type: string
+            aws_region:
+                description: "AWS EKS Cluster Region"
+                required: true
+                type: string
+            aws_account_id:
+                description: "AWS Account id"
+                required: true
+                type: string
+            cluster_name:
+                description: "Cluster name"
+                required: true
+                type: string
+            env_name:
+                description: "Environment name"
+                required: true
+                type: string
+            manifest_repo:
+                description: "Manifest repo. Format: Owner/RepoName"
+                required: true
+                type: string
+            canary_profile:
+                description: "Canary profile"
+                required: false
+                type: string
+                default: "instant"
+            # Versions
+            kubectl_version:
+                description: "Kubectl version to use"
+                required: false
+                type: string
+                default: "v1.32.0"
+            node_version:
+                description: "Node.js version to use"
+                required: false
+                type: string
+                default: "22"
+            pnpm_version:
+                description: "PNPM version to use"
+                required: false
+                type: string
+                default: "8"
+            entry_envoy_image:
+                description: "Entry Envoy proxy image"
+                required: false
+                type: string
+                default: "ghcr.io/dgital/gitops-demo-entry-envoy:sha-8e29ef5102b943619948c4ae3aa7688628a0f514"
+        secrets:
+            aws_access_key_id:
+                required: true
+            aws_secret_access_key:
+                required: true
+            manifest_repo_access_token:
+                required: true
+
+jobs:
+    run-cli:
+        runs-on: ubuntu-24.04
+        permissions:
+            contents: read      # To checkout the repository code
+            packages: write     # To push Docker images to GHCR
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # This fetches all history for all branches and tags
+
+            - name: Node.JS setup and install dependencies
+              uses: ./.github/actions/node-and-dependencies
+              with:
+                  node-version: ${{ inputs.node_version }}
+                  pnpm-version: ${{ inputs.pnpm_version }}
+
+            - name: Git config
+              uses: ./.github/actions/git-config
+              with:
+                  git-name: "Devops CLI"
+                  git-email: "<>"
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v3
+              with:
+                aws-access-key-id: ${{ secrets.aws_access_key_id }}
+                aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+                aws-region: ${{ inputs.aws_region }}
+
+            - name: Log in to GHCR
+              uses: docker/login-action@v3
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Kubectl setup
+              uses: ./.github/actions/kubectl-setup
+              with:
+                  aws-region: ${{ inputs.aws_region }}
+                  kubectl-version: ${{ inputs.kubectl_version }}
+                  cluster-name: ${{ inputs.cluster_name }}
+
+
+            - name: Run devops-cli
+              env:
+                  ENV_NAME: ${{ inputs.env_name }}
+                  MANIFEST_REPO_ACCESS_TOKEN: ${{ secrets.manifest_repo_access_token }}
+                  CLUSTER_NAME: ${{ inputs.cluster_name }}
+                  AWS_REGION: ${{ inputs.aws_region }}
+                  AWS_ACCOUNT_ID: ${{ inputs.aws_account_id }}
+                  ENTRY_ENVOY_IMAGE: ${{ inputs.entry_envoy_image }}
+                  MANIFEST_REPO: ${{ inputs.manifest_repo }}
+                  CANARY_PROFILE: ${{ inputs.canary_profile }}
+                  # Needed for nx-tools/nx-container:build
+                  INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: pnpm nx run devops-cli:run --args="${{ inputs.args }}" --verbose

@@ -1,0 +1,47 @@
+{
+  "name": "livingroom",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/livingroom/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "livingroom:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "livingroom:build:development"
+        },
+        "production": {
+          "buildTarget": "livingroom:build:production"
+        }
+      }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/livingroom",
+        "command": "node ./dist/main.js"
+      },
+      "dependsOn": ["build"]
+    },
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "options": {
+        "engine": "docker",
+        "context": "apps/livingroom",
+        "file": "apps/livingroom/Dockerfile",
+        "push": true,
+        "metadata": {
+          "images": ["ghcr.io/dgital/gitops-demo-livingroom"],
+          "load": true,
+          "tags": ["latest", "type=sha,format=long"]
+        }
+      }
+    }
+  }
+}

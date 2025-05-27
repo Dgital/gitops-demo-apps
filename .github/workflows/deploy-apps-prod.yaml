@@ -1,0 +1,31 @@
+name: Deploy to Prod
+on:
+  workflow_dispatch:
+    inputs:
+      canary_profile:
+        description: "Canary profile"
+        required: false
+        default: "slow"
+        type: choice
+        options:
+          - "slow"
+          - "fast"
+          - "instant"
+
+jobs:
+    add-new-version:
+        name: Deploy to gitops-demo-shared/prod
+        uses: ./.github/workflows/reusable-run-devops-cli.yaml
+        with:
+            args: "new-version"
+            cluster_name: "gitops-demo-shared"
+            env_name: "prod"
+            aws_region: ${{ vars.AWS_REGION }}
+            aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
+            manifest_repo: ${{ vars.MANIFEST_REPO }}
+            canary_profile: ${{ github.event.inputs.canary_profile }}
+        secrets:
+            aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            manifest_repo_access_token: ${{ secrets.MANIFEST_REPO_ACCESS_TOKEN }}
+

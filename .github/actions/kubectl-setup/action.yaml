@@ -1,0 +1,28 @@
+name: "Setup Kubectl"
+description: "Installs kubectl and verifies its functionality"
+inputs:
+    kubectl-version:
+        description: "Version of kubectl to install"
+        default: "v1.32.0"
+        required: false
+    aws-region:
+        description: "AWS Region"
+        required: true
+    cluster-name:
+        description: "Name of the EKS cluster"
+        default: "gitops-demo-shared"
+        required: false
+
+runs:
+    using: "composite"
+    steps:
+        - name: Install kubectl
+          uses: azure/setup-kubectl@v3
+          with:
+              version: ${{ inputs.kubectl-version }}
+        - name: Update kube config
+          shell: bash
+          run: aws eks update-kubeconfig --name ${{ inputs.cluster-name }} --region ${{ inputs.aws-region }}
+        - name: Test Kubectl
+          shell: bash
+          run: kubectl get ns default
