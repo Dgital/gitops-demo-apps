@@ -1,7 +1,7 @@
 import express from "express";
 import * as path from "path";
 
-const versionNumber = "v1";
+const versionNumber = "v2";
 const port = process.env.PORT || 3333;
 
 const app = express();

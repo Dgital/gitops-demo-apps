@@ -4,7 +4,7 @@ import * as path from "path";
 const port = process.env.PORT || 3331;
 const kitchenAddress = `http://kitchen:${process.env.KITCHEN_SERVICE_PORT}`;
 const livingroomAddress = `http://livingroom:${process.env.LIVINGROOM_SERVICE_PORT}`;
-const versionNumber = "v1";
+const versionNumber = "v2";
 
 const sendGet = async (url: string, serviceVersion: string) => {
     try {
