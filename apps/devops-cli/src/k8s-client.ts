@@ -102,17 +102,19 @@ export async function getCanary(namespace: string, name: string) {
     return getCustomResource(group, version, namespace, plural, name);
 }
 
-export function isCanarySucceeded(canaryResource) {
+export function isCanaryFinished(canaryResource) {
     if (!canaryResource.status || !canaryResource.status.conditions) {
         return false;
     }
 
-    const succeededCondition = canaryResource.status.conditions.find((condition) => condition.type === "Promoted");
+    const promotedCondition = canaryResource.status.conditions.find((condition) => condition.type === "Promoted");
 
     // If no Promoted condition exists, canary promotion hasn't completed successfully
-    if (!succeededCondition) {
+    if (!promotedCondition) {
         return false;
     }
 
-    return succeededCondition.status === "True" && succeededCondition.reason === "Succeeded";
+    // Check if the canary has finished (either succeeded or failed with any failure reason)
+    return (promotedCondition.status === "True" && promotedCondition.reason === "Succeeded") ||
+           (promotedCondition.status === "False");
 }

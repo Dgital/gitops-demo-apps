@@ -72,8 +72,8 @@ const USAGE_HELP = "Usage: pnpm nx run devops-cli:run <command> <clusterName> <e
             }
             case "finalize": {
                 const canary = await k8sClient.getCanary(`gitops-demo-${envName}`, "entry-envoy");
-                if (!k8sClient.isCanarySucceeded(canary)) {
-                    console.error("Only environments ucceded canaries can be finalized manually.");
+                if (!k8sClient.isCanaryFinished(canary)) {
+                    console.error("Only environments with finished rollouts can be finalized manually.");
                     statusCode = 1;
                     break;
                 }
