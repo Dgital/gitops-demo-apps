@@ -1,6 +1,9 @@
 # GitOps Demo: application repository
 
-This project is created to demonstrate GitOps in AWS with Microservices. It contains three example Node.JS application and an Envoy proxy with a Flagger Canary. The Kubernetes manifests for the application are generated with the *devops-cli* tool, which is mainly run by Github Actions. Please note, that we assume that you already have an EKS cluster installed with FluxCD.
+This repository contains source code for our [GitOps - A Practical Implementation](https://dgital.com/blog/2025/06/17/gitops-practical-implementation) case study.
+
+
+The project is created to demonstrate GitOps in AWS with Microservices. It contains three example Node.JS application and an Envoy proxy with a Flagger Canary. The Kubernetes manifests for the application are generated with the *devops-cli* tool, which is mainly run by Github Actions. Please note, that we assume that you already have an EKS cluster installed with FluxCD.
 
 ## Prerequisites
 
